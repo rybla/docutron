@@ -3,6 +3,8 @@ use diesel::{connection::SimpleConnection, prelude::*};
 pub mod models;
 pub mod queries;
 pub mod schema;
+#[cfg(test)]
+mod test;
 
 pub fn establish_connection(database_url: &str) -> SqliteConnection {
     let mut conn = SqliteConnection::establish(database_url).expect("Error connecting to database");
