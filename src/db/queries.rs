@@ -1,42 +1,56 @@
 use crate::db::{
     models::*,
-    schema::{doc_tags, docs, tags},
+    schema::{document_tags, documents, tags},
 };
 use chrono::NaiveDate;
 use diesel::{insert_into, prelude::*};
 
 /// Insert a new document into the database.
-pub fn insert_doc(conn: &mut SqliteConnection, doc: NewDoc) -> QueryResult<Doc> {
-    insert_into(docs::dsl::docs).values(&doc).get_result(conn)
+pub fn insert_document(
+    conn: &mut SqliteConnection,
+    document: NewDocument,
+) -> QueryResult<Document> {
+    insert_into(documents::dsl::documents)
+        .values(&document)
+        .get_result(conn)
 }
 
 /// Retrieves a document from the database by its ID.
-pub fn get_doc(conn: &mut SqliteConnection, doc_id: i32) -> QueryResult<Doc> {
-    docs::dsl::docs.find(doc_id).first(conn)
+pub fn get_document(conn: &mut SqliteConnection, document_id: i32) -> QueryResult<Document> {
+    documents::dsl::documents.find(document_id).first(conn)
 }
 
 /// Retrieves all documents from the database in order of decreasing `added_date`.
-pub fn get_docs(conn: &mut SqliteConnection) -> QueryResult<Vec<Doc>> {
-    docs::dsl::docs
-        .order_by(docs::dsl::added_date.desc())
+pub fn get_documents(conn: &mut SqliteConnection) -> QueryResult<Vec<Document>> {
+    documents::dsl::documents
+        .order_by(documents::dsl::added_date.desc())
         .load(conn)
 }
 
 /// Retrieves all documents from the database that have an `added_date` after the given date, in order of decreasing `added_date`.
-pub fn get_docs_after(conn: &mut SqliteConnection, date: NaiveDate) -> QueryResult<Vec<Doc>> {
-    docs::dsl::docs
-        .filter(docs::dsl::added_date.gt(date))
-        .order_by(docs::dsl::added_date.desc())
+pub fn get_documents_after(
+    conn: &mut SqliteConnection,
+    date: NaiveDate,
+) -> QueryResult<Vec<Document>> {
+    documents::dsl::documents
+        .filter(documents::dsl::added_date.gt(date))
+        .order_by(documents::dsl::added_date.desc())
         .load(conn)
 }
 
 /// Retrieves at most `limit` documents from the database in order of decreasing `added_date`.
-pub fn get_docs_limit(_conn: &mut SqliteConnection, _limit: usize) -> QueryResult<Vec<Doc>> {
+pub fn get_documents_limit(
+    _conn: &mut SqliteConnection,
+    _limit: usize,
+) -> QueryResult<Vec<Document>> {
     unimplemented!()
 }
 
 /// Retrieves all documents from the database that have a given tag, in order of decreasing `added_date`.
-pub fn get_docs_by_tag(_conn: &mut SqliteConnection, _tag_id: i32) -> QueryResult<Vec<Doc>> {
+pub fn get_documents_by_tag(
+    _conn: &mut SqliteConnection,
+    _tag_id: i32,
+) -> QueryResult<Vec<Document>> {
     unimplemented!()
 }
 
@@ -56,27 +70,30 @@ pub fn get_tag(conn: &mut SqliteConnection, tag_id: i32) -> QueryResult<Tag> {
 }
 
 /// Adds relations between a document and its tags into the database.
-pub fn insert_doc_tags(
+pub fn insert_document_tags(
     conn: &mut SqliteConnection,
-    doc_id: i32,
+    document_id: i32,
     tag_ids: Vec<i32>,
 ) -> QueryResult<()> {
-    let new_doc_tags: Vec<NewDocTag> = tag_ids
+    let new_document_tags: Vec<NewDocumentTag> = tag_ids
         .into_iter()
-        .map(|tag_id| NewDocTag { doc_id, tag_id })
+        .map(|tag_id| NewDocumentTag {
+            document_id,
+            tag_id,
+        })
         .collect();
 
-    insert_into(doc_tags::dsl::doc_tags)
-        .values(&new_doc_tags)
+    insert_into(document_tags::dsl::document_tags)
+        .values(&new_document_tags)
         .execute(conn)
         .map(|_| ())
 }
 
 /// Retrieves all tags that are related to a given document ID from the database.
-pub fn get_doc_tags(conn: &mut SqliteConnection, doc_id: i32) -> QueryResult<Vec<Tag>> {
-    doc_tags::dsl::doc_tags
+pub fn get_document_tags(conn: &mut SqliteConnection, document_id: i32) -> QueryResult<Vec<Tag>> {
+    document_tags::dsl::document_tags
         .inner_join(tags::dsl::tags)
-        .filter(doc_tags::dsl::doc_id.eq(doc_id))
+        .filter(document_tags::dsl::document_id.eq(document_id))
         .select(Tag::as_select())
         .load(conn)
 }
