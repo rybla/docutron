@@ -19,8 +19,6 @@ fn validate() -> Result<()> {
     println!();
     clippy()?;
     println!();
-    typecheck()?;
-    println!();
     test()?;
 
     println!();
@@ -34,6 +32,7 @@ fn format() -> Result<()> {
 
     let result = std::process::Command::new("cargo")
         .arg("fmt")
+        .arg("--all")
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
         .output()?;
@@ -47,10 +46,15 @@ fn format() -> Result<()> {
 }
 
 fn clippy() -> Result<()> {
-    println!("Begin clippy.");
+    println!("Begin typechecking with clippy.");
 
     let result = std::process::Command::new("cargo")
         .arg("clippy")
+        .arg("--all-targets")
+        .arg("--all-features")
+        .arg("--")
+        .arg("-D")
+        .arg("warnings")
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
         .output()?;
@@ -58,25 +62,7 @@ fn clippy() -> Result<()> {
         return Err(anyhow::anyhow!("Clippy failed."));
     }
 
-    println!("Clippy completed successfully.");
-
-    Ok(())
-}
-
-fn typecheck() -> Result<()> {
-    println!("Begin typechecking.");
-
-    let result = std::process::Command::new("cargo")
-        .arg("check")
-        .stdout(std::process::Stdio::inherit())
-        .stderr(std::process::Stdio::inherit())
-        .output()?;
-
-    if !result.status.success() {
-        return Err(anyhow::anyhow!("Typechecking failed."));
-    }
-
-    println!("Typechecking completed successfully.");
+    println!("Typechecking with clippy completed successfully.");
 
     Ok(())
 }
@@ -86,6 +72,8 @@ fn test() -> Result<()> {
 
     let result = std::process::Command::new("cargo")
         .arg("test")
+        .arg("--all-targets")
+        .arg("--all-features")
         .stdout(std::process::Stdio::inherit())
         .stderr(std::process::Stdio::inherit())
         .output()?;
