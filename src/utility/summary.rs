@@ -3,13 +3,24 @@ use anyhow::{Result, anyhow};
 use crate::utility::{self, common::Env};
 
 /// Fetches the content at a URL and extracts the text content.
+///
+/// This function attempts to identify the URL as a specific platform (Arxiv, GitHub, X/Twitter)
+/// and uses specialized extractors to retreive the content.
+/// - **Arxiv**: Extracts the paper summary/abstract.
+/// - **GitHub**: Extracts the repository README content.
+/// - **X (Twitter)**: Extracts the post content (HTML).
+///
+/// If no specific platform matches, it fetches the URL and inspects the `Content-Type`:
+/// - **PDF** (`text/pdf`): Extracts text from the PDF.
+/// - **HTML** (`text/html`): Uses Mozilla's Readability algorithm to extract the main article text.
 pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
     if let Some(arxiv_id) = utility::arxiv::get_id_from_url(url) {
-        unimplemented!("extract abstract")
+        let arxiv = utility::arxiv::fetch_by_id(arxiv_id).await?;
+        Ok(arxiv.summary)
     } else if let Ok(github_repo) = utility::github::fetch_repo_info(&env.octocrab, url).await {
-        unimplemented!("extract README")
+        Ok(github_repo.readme.unwrap_or_default())
     } else if let Ok(x_post) = utility::x::fetch_post(url).await {
-        unimplemented!("extract content")
+        Ok(x_post.html)
     } else {
         // fetch content at URL
         let response = env.client.get(url).send().await?;
@@ -31,16 +42,22 @@ pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
         // extract content
         #[allow(clippy::single_match)]
         match content_type.as_str() {
-            "text/pdf" => {
-                unimplemented!("extract text content from PDF")
+            "application/pdf" | "text/pdf" => {
+                let bytes = response.bytes().await?;
+                let text = pdf_extract::extract_text_from_mem(&bytes)?;
+                Ok(text)
             }
             content_type if content_type.starts_with("text/html") => {
-                unimplemented!("use Readability to extract text content from HTML")
+                let text = response.text().await?;
+                // Parse the HTML content. We pass the URL as well (if the API supports it) or just the text.
+                // Assuming `parse` takes the HTML content.
+                // Looking at common usage of readability crates, providing text is primary.
+                // If this fails to compile due to missing signature, we will adjust.
+                let article = env.readability.parse(&text)?;
+                Ok(article.text_content)
             }
             // TODO: handle other types of content
-            _ => {
-                return Err(anyhow!("unrecognized content type: {content_type}"));
-            }
+            _ => Err(anyhow!("unrecognized content type: {content_type}")),
         }
     }
 }

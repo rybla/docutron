@@ -1,7 +1,7 @@
 use anyhow::Result;
 use diesel::SqliteConnection;
 
-const HACKERNEWS_RSS_FEED_URL: &'static str = "https://hnrss.org/best";
+const HACKERNEWS_RSS_FEED_URL: &str = "https://hnrss.org/best";
 
 lazy_static::lazy_static! {
     static ref KEYWORDS: Vec<String> = [
