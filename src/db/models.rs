@@ -20,6 +20,8 @@ pub struct Document {
     pub title: Option<String>,
     pub published_date: Option<String>,
     pub summary: Option<String>,
+    pub fetch_error: Option<String>,
+    pub summary_error: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Insertable)]
@@ -32,6 +34,8 @@ pub struct NewDocument {
     pub title: Option<String>,
     pub published_date: Option<String>,
     pub summary: Option<String>,
+    pub fetch_error: Option<String>,
+    pub summary_error: Option<String>,
 }
 
 pub struct NewDocumentBuilder {
@@ -41,6 +45,8 @@ pub struct NewDocumentBuilder {
     title: Option<String>,
     published_date: Option<String>,
     summary: Option<String>,
+    fetch_error: Option<String>,
+    summary_error: Option<String>,
 }
 
 impl NewDocumentBuilder {
@@ -52,6 +58,8 @@ impl NewDocumentBuilder {
             title: None,
             published_date: None,
             summary: None,
+            fetch_error: None,
+            summary_error: None,
         }
     }
 
@@ -85,6 +93,16 @@ impl NewDocumentBuilder {
         self
     }
 
+    pub fn fetch_error(mut self, fetch_error: impl Into<String>) -> Self {
+        self.fetch_error = Some(fetch_error.into());
+        self
+    }
+
+    pub fn summary_error(mut self, summary_error: impl Into<String>) -> Self {
+        self.summary_error = Some(summary_error.into());
+        self
+    }
+
     pub fn build(self) -> NewDocument {
         NewDocument {
             added_date: self.added_date,
@@ -93,6 +111,8 @@ impl NewDocumentBuilder {
             title: self.title,
             published_date: self.published_date,
             summary: self.summary,
+            fetch_error: self.fetch_error,
+            summary_error: self.summary_error,
         }
     }
 }
