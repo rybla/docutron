@@ -44,6 +44,7 @@ pub struct NewDocumentBuilder {
     added_date: NaiveDate,
     url: String,
     bookmarked: bool,
+    source: Option<String>,
 }
 
 impl NewDocumentBuilder {
@@ -52,6 +53,7 @@ impl NewDocumentBuilder {
             added_date: chrono::Local::now().date_naive(),
             url: url.into(),
             bookmarked: false,
+            source: None,
         }
     }
 
@@ -62,6 +64,11 @@ impl NewDocumentBuilder {
 
     pub fn bookmarked(mut self, bookmarked: bool) -> Self {
         self.bookmarked = bookmarked;
+        self
+    }
+
+    pub fn source(mut self, source: impl Into<String>) -> Self {
+        self.source = Some(source.into());
         self
     }
 
