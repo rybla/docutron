@@ -8,7 +8,8 @@ fn test_get_doc_tags() -> Result<()> {
 
     let doc = NewDocument {
         added_date: NaiveDate::from_ymd_opt(2020, 1, 1).unwrap(),
-        url: None,
+        url: "http://example.com".to_string(),
+        bookmark_count: 0,
         source: None,
         title: None,
         published_date: None,

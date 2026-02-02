@@ -7,9 +7,24 @@ use diesel::{insert_into, prelude::*};
 
 /// Insert a new document into the database.
 pub fn add_document(conn: &mut SqliteConnection, document: NewDocument) -> QueryResult<Document> {
-    insert_into(documents::dsl::documents)
-        .values(&document)
-        .get_result(conn)
+    use crate::db::schema::documents::dsl::*;
+
+    let existing = documents
+        .filter(url.eq(&document.url))
+        .first::<Document>(conn)
+        .optional()?;
+
+    if let Some(existing_doc) = existing {
+        if document.bookmark_count > 0 {
+            diesel::update(documents.find(existing_doc.id))
+                .set(bookmark_count.eq(bookmark_count + 1))
+                .get_result(conn)
+        } else {
+            Ok(existing_doc)
+        }
+    } else {
+        insert_into(documents).values(&document).get_result(conn)
+    }
 }
 
 /// Retrieves a document from the database by its ID.
