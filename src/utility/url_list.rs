@@ -6,7 +6,7 @@ use url::Url;
 
 /// Clean up a URL by removing query parameters, fragments, etc.
 pub fn clean_url(url: &str) -> String {
-    log::trace!("clean_url: {}", url);
+    log::trace!("clean_url: {url}");
     match Url::parse(url) {
         Ok(mut parsed_url) => {
             parsed_url.set_query(None);
@@ -14,7 +14,7 @@ pub fn clean_url(url: &str) -> String {
             parsed_url.to_string()
         }
         Err(e) => {
-            log::warn!("Failed to parse URL '{}': {}", url, e);
+            log::warn!("Failed to parse URL '{url}': {e}");
             url.to_string()
         }
     }
