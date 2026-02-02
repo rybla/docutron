@@ -1,6 +1,6 @@
 use crate::db::{
     models::*,
-    schema::{docs, tags},
+    schema::{doc_tags, docs, tags},
 };
 use chrono::NaiveDate;
 use diesel::{insert_into, prelude::*};
@@ -51,10 +51,22 @@ pub fn insert_doc_tags(
     doc_id: i32,
     tag_ids: Vec<i32>,
 ) -> QueryResult<()> {
-    unimplemented!()
+    let new_doc_tags: Vec<NewDocTag> = tag_ids
+        .into_iter()
+        .map(|tag_id| NewDocTag { doc_id, tag_id })
+        .collect();
+
+    insert_into(doc_tags::dsl::doc_tags)
+        .values(&new_doc_tags)
+        .execute(conn)
+        .map(|_| ())
 }
 
 /// Retrieves all tags that are related to a given document ID from the database.
 pub fn get_doc_tags(conn: &mut SqliteConnection, doc_id: i32) -> QueryResult<Vec<Tag>> {
-    unimplemented!()
+    doc_tags::dsl::doc_tags
+        .inner_join(tags::dsl::tags)
+        .filter(doc_tags::dsl::doc_id.eq(doc_id))
+        .select(Tag::as_select())
+        .load(conn)
 }
