@@ -16,8 +16,8 @@ load_env_var!(SAVED_URLS_FILEPATH);
 pub const DATABASE_URL: &str = "database/v1.db";
 pub const MIGRATIONS_DIRPATH: &str = "./migrations";
 
-pub const REPOSITORY_URL: &str = "https://github.com/rybla/linkstitcher";
+pub const REPOSITORY_URL: &str = "https://github.com/rybla/docutron";
 pub const FEEDS_DIRPATH: &str = "site/";
-pub const RECENCY_CUTOFF: chrono::Days = chrono::Days::new(2);
-pub const MAX_RSS_FEED_ITEMS: usize = 5;
-pub const MAX_CHARS_SUMMARY: usize = 600;
+pub const RECENCY_CUTOFF: chrono::Days = chrono::Days::new(30);
+pub const MAX_ITEMS_IN_RSS_FEED: usize = 100;
+pub const MAX_CHARS_IN_SUMMARY: usize = 600;

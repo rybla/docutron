@@ -23,11 +23,21 @@ pub fn get_docs(conn: &mut SqliteConnection) -> QueryResult<Vec<Doc>> {
 }
 
 /// Retrieves all documents from the database that have an `added_date` after the given date, in order of decreasing `added_date`.
-pub fn get_docs_after_date(conn: &mut SqliteConnection, date: NaiveDate) -> QueryResult<Vec<Doc>> {
+pub fn get_docs_after(conn: &mut SqliteConnection, date: NaiveDate) -> QueryResult<Vec<Doc>> {
     docs::dsl::docs
         .filter(docs::dsl::added_date.gt(date))
         .order_by(docs::dsl::added_date.desc())
         .load(conn)
+}
+
+/// Retrieves at most `limit` documents from the database in order of decreasing `added_date`.
+pub fn get_docs_limit(conn: &mut SqliteConnection, limit: usize) -> QueryResult<Vec<Doc>> {
+    unimplemented!()
+}
+
+/// Retrieves all documents from the database that have a given tag, in order of decreasing `added_date`.
+pub fn get_docs_by_tag(conn: &mut SqliteConnection, tag_id: i32) -> QueryResult<Vec<Doc>> {
+    unimplemented!()
 }
 
 /// Insert a new tag into the database.
