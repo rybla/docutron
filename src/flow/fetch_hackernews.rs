@@ -51,7 +51,7 @@ lazy_static::lazy_static! {
         ].into_iter().map(|s| s.to_owned()).collect();
 }
 
-/// Fetch the top stories from Hacker News, then insert those urls into the `documents` table in the database.
+/// Fetches the top stories from Hacker News, via the "best" RSS feed: https://hnrss.org/best. Then inserts those urls into the `documents` table in the database via [`crate::db::queries::add_document`]. Indicates that the source is "hackernews/best" using [`crate::db::models::NewDocumentBuilder::source`]
 ///
 /// If an insertion fails, a warning is logged and the process continues.
 pub async fn fetch_hackernews() -> Result<()> {
