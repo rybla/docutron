@@ -30,6 +30,7 @@ pub struct Document {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewDocument {
     pub added_date: NaiveDate,
+    pub bookmark_count: i32,
     pub url: Option<String>,
     pub source: Option<String>,
     pub title: Option<String>,
@@ -41,6 +42,7 @@ pub struct NewDocument {
 
 pub struct NewDocumentBuilder {
     added_date: NaiveDate,
+    bookmarked: bool,
     url: Option<String>,
     source: Option<String>,
     title: Option<String>,
@@ -54,6 +56,7 @@ impl NewDocumentBuilder {
     pub fn new() -> Self {
         Self {
             added_date: chrono::Local::now().date_naive(),
+            bookmarked: false,
             url: None,
             source: None,
             title: None,
@@ -66,6 +69,11 @@ impl NewDocumentBuilder {
 
     pub fn added_date(mut self, added_date: NaiveDate) -> Self {
         self.added_date = added_date;
+        self
+    }
+
+    pub fn bookmarked(mut self, bookmarked: bool) -> Self {
+        self.bookmarked = bookmarked;
         self
     }
 
@@ -107,6 +115,7 @@ impl NewDocumentBuilder {
     pub fn build(self) -> NewDocument {
         NewDocument {
             added_date: self.added_date,
+            bookmark_count: if self.bookmarked { 1 } else { 0 },
             url: self.url,
             source: self.source,
             title: self.title,

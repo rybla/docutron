@@ -6,10 +6,7 @@ use chrono::NaiveDate;
 use diesel::{insert_into, prelude::*};
 
 /// Insert a new document into the database.
-pub fn insert_document(
-    conn: &mut SqliteConnection,
-    document: NewDocument,
-) -> QueryResult<Document> {
+pub fn add_document(conn: &mut SqliteConnection, document: NewDocument) -> QueryResult<Document> {
     insert_into(documents::dsl::documents)
         .values(&document)
         .get_result(conn)
@@ -55,12 +52,12 @@ pub fn get_documents_by_tag(
 }
 
 /// Insert a new tag into the database.
-pub fn insert_tag(conn: &mut SqliteConnection, tag: NewTag) -> QueryResult<Tag> {
+pub fn add_tag(conn: &mut SqliteConnection, tag: NewTag) -> QueryResult<Tag> {
     insert_into(tags::dsl::tags).values(&tag).get_result(conn)
 }
 
 /// Inserts new tags into the database.
-pub fn insert_tags(conn: &mut SqliteConnection, tags: Vec<NewTag>) -> QueryResult<Vec<Tag>> {
+pub fn add_tags(conn: &mut SqliteConnection, tags: Vec<NewTag>) -> QueryResult<Vec<Tag>> {
     insert_into(tags::dsl::tags).values(&tags).get_results(conn)
 }
 
@@ -70,7 +67,7 @@ pub fn get_tag(conn: &mut SqliteConnection, tag_id: i32) -> QueryResult<Tag> {
 }
 
 /// Adds relations between a document and its tags into the database.
-pub fn insert_document_tags(
+pub fn add_document_tags(
     conn: &mut SqliteConnection,
     document_id: i32,
     tag_ids: Vec<i32>,
