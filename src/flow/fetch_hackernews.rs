@@ -1,4 +1,7 @@
 use anyhow::Result;
+use diesel::SqliteConnection;
+
+const HACKERNEWS_RSS_FEED_URL: &'static str = "https://hnrss.org/best";
 
 lazy_static::lazy_static! {
     static ref KEYWORDS: Vec<String> = [
@@ -54,18 +57,15 @@ lazy_static::lazy_static! {
 /// Fetches the top stories from Hacker News, via the "best" RSS feed: https://hnrss.org/best. Then inserts those urls into the `documents` table in the database via [`crate::db::queries::add_document`]. Indicates that the source is "hackernews/best" using [`crate::db::models::NewDocumentBuilder::source`]
 ///
 /// If an insertion fails, a warning is logged and the process continues.
-pub async fn fetch_hackernews() -> Result<()> {
+pub async fn fetch_hackernews(conn: &mut SqliteConnection) -> Result<()> {
     log::trace!("fetch_hackernews");
-    let content = reqwest::get("https://hnrss.org/best")
-        .await?
-        .bytes()
-        .await?;
+
+    let content = reqwest::get(HACKERNEWS_RSS_FEED_URL).await?.bytes().await?;
     let channel = rss::Channel::read_from(std::io::Cursor::new(content))?;
-    let mut conn = crate::db::establish_connection();
 
     for item in channel.items {
         if let Some(url) = item.link {
-            if let Ok(Some(_)) = crate::db::queries::get_document_by_url(&mut conn, &url) {
+            if let Ok(Some(_)) = crate::db::queries::get_document_by_url(conn, &url) {
                 continue;
             }
 
@@ -73,7 +73,7 @@ pub async fn fetch_hackernews() -> Result<()> {
                 .source("hackernews/best")
                 .build();
 
-            if let Err(e) = crate::db::queries::add_document(&mut conn, new_doc) {
+            if let Err(e) = crate::db::queries::add_document(conn, new_doc) {
                 log::warn!("Failed to insert hackernews story '{url}': {e}");
             }
         }

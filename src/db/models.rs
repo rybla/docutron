@@ -45,6 +45,8 @@ pub struct NewDocumentBuilder {
     url: String,
     bookmarked: bool,
     source: Option<String>,
+    summary: Option<String>,
+    fetch_error: Option<String>,
 }
 
 impl NewDocumentBuilder {
@@ -54,6 +56,8 @@ impl NewDocumentBuilder {
             url: url.into(),
             bookmarked: false,
             source: None,
+            summary: None,
+            fetch_error: None,
         }
     }
 
@@ -72,16 +76,26 @@ impl NewDocumentBuilder {
         self
     }
 
+    pub fn summary(mut self, summary: impl Into<String>) -> Self {
+        self.summary = Some(summary.into());
+        self
+    }
+
+    pub fn fetch_error(mut self, fetch_error: impl Into<String>) -> Self {
+        self.fetch_error = Some(fetch_error.into());
+        self
+    }
+
     pub fn build(self) -> NewDocument {
         NewDocument {
             added_date: self.added_date,
             url: self.url,
             bookmark_count: if self.bookmarked { 1 } else { 0 },
-            source: None,
+            source: self.source,
             title: None,
             published_date: None,
-            summary: None,
-            fetch_error: None,
+            summary: self.summary,
+            fetch_error: self.fetch_error,
             summary_error: None,
         }
     }
