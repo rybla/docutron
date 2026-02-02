@@ -31,12 +31,12 @@ pub fn get_docs_after(conn: &mut SqliteConnection, date: NaiveDate) -> QueryResu
 }
 
 /// Retrieves at most `limit` documents from the database in order of decreasing `added_date`.
-pub fn get_docs_limit(conn: &mut SqliteConnection, limit: usize) -> QueryResult<Vec<Doc>> {
+pub fn get_docs_limit(_conn: &mut SqliteConnection, _limit: usize) -> QueryResult<Vec<Doc>> {
     unimplemented!()
 }
 
 /// Retrieves all documents from the database that have a given tag, in order of decreasing `added_date`.
-pub fn get_docs_by_tag(conn: &mut SqliteConnection, tag_id: i32) -> QueryResult<Vec<Doc>> {
+pub fn get_docs_by_tag(_conn: &mut SqliteConnection, _tag_id: i32) -> QueryResult<Vec<Doc>> {
     unimplemented!()
 }
 

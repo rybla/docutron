@@ -15,7 +15,7 @@ mod test;
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
 pub fn establish_connection() -> SqliteConnection {
-    establish_common_connection(DATABASE_URL)
+    establish_common_connection(&DATABASE_URL)
 }
 
 #[cfg(test)]

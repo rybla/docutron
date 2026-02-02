@@ -39,5 +39,7 @@ CREATE TABLE tag_groups (
 CREATE TABLE tag_group_tags (
     tag_group_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
-    -- TODO
+    PRIMARY KEY (tag_group_id, tag_id),
+    FOREIGN KEY (tag_group_id) REFERENCES tag_groups (id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
 );

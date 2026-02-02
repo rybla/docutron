@@ -192,11 +192,15 @@ impl ArxivQueryBuilder {
 /// Fetch the paper information using the arXiv API.
 /// # Example
 /// ```rust
-/// use arxiv::{fetch_arxivs, query};
+/// use docutron::utility::arxiv::{fetch_arxivs, ArxivQueryBuilder};
 ///
-/// let query = query!(search_query = "cat:cs.CL");
-/// // arxivs type is Vec<Arxiv>
-/// let arxivs = fetch_arxivs(query).await?;
+/// #[tokio::main]
+/// async fn main() -> anyhow::Result<()> {
+///     let query = ArxivQueryBuilder::new().search_query("cat:cs.CL").build();
+///     // arxivs type is Vec<Arxiv>
+///     let arxivs = fetch_arxivs(query).await?;
+///     Ok(())
+/// }
 /// ```
 pub async fn fetch_arxivs(query: ArxivQuery) -> Result<Vec<Arxiv>> {
     let body = reqwest::get(query.to_url()).await?.text().await?;
