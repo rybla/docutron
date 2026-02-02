@@ -9,10 +9,13 @@ macro_rules! load_env_var {
     };
 }
 
-load_env_var!(DATABASE_URL);
 load_env_var!(GITHUB_PERSONAL_ACCESS_TOKEN);
 load_env_var!(BOOKMARKED_URLS_FILEPATH);
 load_env_var!(SAVED_URLS_FILEPATH);
+
+pub const DATABASE_URL: &str = "database/v1.db";
+pub const MIGRATIONS_DIRPATH: &str = "./migrations";
+
 pub const REPOSITORY_URL: &str = "https://github.com/rybla/linkstitcher";
 pub const FEEDS_DIRPATH: &str = "site/";
 pub const RECENCY_CUTOFF: chrono::Days = chrono::Days::new(2);
