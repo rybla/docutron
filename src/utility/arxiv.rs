@@ -9,20 +9,51 @@ use map_macro::hash_map;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
+use url::Url;
 use xml::EventReader;
 use xml::reader::XmlEvent;
 
-pub async fn fetch_by_url(arxiv_url: &str) -> Result<Arxiv> {
+// ----------------------------------------------------------------------------
+// ValidArxivUrl
+// ----------------------------------------------------------------------------
+
+pub struct ValidArxivUrl {
+    pub id: String,
+    pub pdf_url: String,
+    pub html_url: String,
+}
+
+impl ValidArxivUrl {
+    pub fn parse(url: &Url) -> Result<Option<Self>> {
+        if let Some(id) = get_id_from_url(url) {
+            Ok(Some(Self {
+                id: id.to_string(),
+                pdf_url: format!("https://arxiv.org/pdf/{id}.pdf"),
+                html_url: format!("https://arxiv.org/html/{id}"),
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub async fn fetch(&self) -> Result<Arxiv> {
+        fetch_by_id(&self.id).await
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+pub async fn fetch_by_url(arxiv_url: &Url) -> Result<Arxiv> {
     let arxiv_id = get_id_from_url(arxiv_url).ok_or_else(|| anyhow!("Invalid ArXiv URL"))?;
     fetch_by_id(arxiv_id).await
 }
 
-pub fn get_id_from_url(url: &str) -> Option<&str> {
-    if let Some(s) = url.strip_prefix("https://arxiv.org/pdf/") {
+pub fn get_id_from_url(url: &Url) -> Option<&str> {
+    if let Some(s) = url.as_str().strip_prefix("https://arxiv.org/pdf/") {
         Some(s.strip_suffix(".pdf").unwrap_or(s))
-    } else if let Some(s) = url.strip_prefix("https://arxiv.org/abs/") {
+    } else if let Some(s) = url.as_str().strip_prefix("https://arxiv.org/abs/") {
         Some(s)
-    } else if let Some(s) = url.strip_prefix("https://arxiv.org/html/") {
+    } else if let Some(s) = url.as_str().strip_prefix("https://arxiv.org/html/") {
         Some(s)
     } else {
         None

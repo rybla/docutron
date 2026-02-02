@@ -1,6 +1,6 @@
-use anyhow::{Result, anyhow};
-
 use crate::utility::{self, common::Env};
+use anyhow::{Result, anyhow};
+use url::Url;
 
 /// Fetches the content at a URL and extracts the text content.
 ///
@@ -13,20 +13,23 @@ use crate::utility::{self, common::Env};
 /// If no specific platform matches, it fetches the URL and inspects the `Content-Type`:
 /// - **PDF** (`text/pdf`): Extracts text from the PDF.
 /// - **HTML** (`text/html`): Uses Mozilla's Readability algorithm to extract the main article text.
-pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
-    if let Some(arxiv_id) = utility::arxiv::get_id_from_url(url) {
-        let arxiv = utility::arxiv::fetch_by_id(arxiv_id).await?;
+pub async fn fetch_text_content(env: &mut Env, url: &Url) -> Result<String> {
+    if let Some(valid_arxiv_url) = utility::arxiv::ValidArxivUrl::parse(url)? {
+        let arxiv = valid_arxiv_url.fetch().await?;
         Ok(arxiv.summary)
-    } else if let Ok(github_repo) = utility::github::fetch_repo_info(&env.octocrab, url).await {
+    } else if let Some(valid_github_repo_url) = utility::github::ValidGithubRepoUrl::parse(url)? {
+        let github_repo = valid_github_repo_url.fetch(&env.octocrab).await?;
         let readme = github_repo
             .readme
             .ok_or_else(|| anyhow!("No README found for this repository"))?;
         Ok(readme)
-    } else if let Ok(x_post) = utility::x::fetch_post(url).await {
-        Ok(x_post.html)
+    } else if let Some(valid_x_url) = utility::x::ValidXUrl::parse(url)? {
+        let x_post = valid_x_url.fetch().await?;
+        let article = env.readability.parse(&x_post.html)?;
+        Ok(article.text_content)
     } else {
         // fetch content at URL
-        let response = env.client.get(url).send().await?;
+        let response = env.client.get(url.as_str()).send().await?;
         let headers = response.headers();
 
         let content_type = match headers.get("content-type") {
