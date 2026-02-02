@@ -18,6 +18,7 @@ fn test_get_doc_tags() -> Result<()> {
     };
     let doc_id = insert_document(&mut conn, doc).unwrap().id;
     let tag = NewTag {
+        added_date: NaiveDate::from_ymd_opt(2020, 1, 1).unwrap(),
         label: "test".to_string(),
     };
     let tag_id = insert_tag(&mut conn, tag).unwrap().id;

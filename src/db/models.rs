@@ -1,5 +1,6 @@
 use crate::db::schema::{
-    author_tags, authors, document_tags, documents, tag_group_tags, tag_groups, tags,
+    author_tags, authors, document_authors, document_tags, documents, tag_group_tags, tag_groups,
+    tags,
 };
 use chrono::NaiveDate;
 use diesel::{prelude::*, sqlite};
@@ -143,6 +144,7 @@ pub struct Author {
 #[diesel(table_name = authors)]
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewAuthor {
+    pub added_date: NaiveDate,
     pub name: Option<String>,
     pub website_url: Option<String>,
     pub github_username: Option<String>,
@@ -190,6 +192,7 @@ impl NewAuthorBuilder {
 
     pub fn build(self) -> NewAuthor {
         NewAuthor {
+            added_date: self.added_date,
             name: self.name,
             website_url: self.website_url,
             github_username: self.github_username,
@@ -213,6 +216,7 @@ impl Default for NewAuthorBuilder {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct Tag {
     pub id: i32,
+    pub added_date: NaiveDate,
     pub label: String,
 }
 
@@ -220,6 +224,7 @@ pub struct Tag {
 #[diesel(table_name = tags)]
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewTag {
+    pub added_date: NaiveDate,
     pub label: String,
 }
 
@@ -236,8 +241,13 @@ pub struct TagGroup {
 #[diesel(table_name = tag_groups)]
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewTagGroup {
-    pub name: String,
+    pub added_date: NaiveDate,
+    pub name: Option<String>,
 }
+
+// ----------------------------------------------------------------------------
+// relations
+// ----------------------------------------------------------------------------
 
 #[derive(Debug, Clone, PartialEq, Eq, Queryable, Selectable)]
 #[diesel(table_name = tag_group_tags)]
@@ -253,6 +263,22 @@ pub struct TagGroupTags {
 pub struct NewTagGroupTags {
     pub tag_group_id: i32,
     pub tag_id: i32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Queryable, Selectable)]
+#[diesel(table_name = document_authors)]
+#[diesel(check_for_backend(sqlite::Sqlite))]
+pub struct DocumentAuthor {
+    pub document_id: i32,
+    pub author_id: i32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Insertable)]
+#[diesel(table_name = document_authors)]
+#[diesel(check_for_backend(sqlite::Sqlite))]
+pub struct NewDocumentAuthor {
+    pub document_id: i32,
+    pub author_id: i32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Queryable, Selectable)]
