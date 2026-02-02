@@ -10,8 +10,8 @@ macro_rules! load_env_var {
 }
 
 load_env_var!(GITHUB_PERSONAL_ACCESS_TOKEN);
-load_env_var!(BOOKMARKED_URLS_FILEPATH);
-load_env_var!(SAVED_URLS_FILEPATH);
+load_env_var!(BOOKMARKS_URL_LIST_FILEPATH);
+load_env_var!(SAVEDS_URL_LIST_FILEPATH);
 load_env_var!(DATABASE_URL);
 
 pub const MIGRATIONS_DIRPATH: &str = "./migrations";
