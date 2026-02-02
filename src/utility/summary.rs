@@ -18,7 +18,10 @@ pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
         let arxiv = utility::arxiv::fetch_by_id(arxiv_id).await?;
         Ok(arxiv.summary)
     } else if let Ok(github_repo) = utility::github::fetch_repo_info(&env.octocrab, url).await {
-        Ok(github_repo.readme.unwrap_or_default())
+        let readme = github_repo
+            .readme
+            .ok_or_else(|| anyhow!("No README found for this repository"))?;
+        Ok(readme)
     } else if let Ok(x_post) = utility::x::fetch_post(url).await {
         Ok(x_post.html)
     } else {
@@ -29,7 +32,7 @@ pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
         let content_type = match headers.get("content-type") {
             None => {
                 return Result::Err(anyhow!(
-                    "I failed to get the content type, since the response does not have a header for content-type: {response:?}"
+                    "Failed to get the content type, since the response does not have a header for content-type: {response:?}"
                 ));
             }
             Some(content_type) => {
@@ -57,7 +60,7 @@ pub async fn fetch_text_content(env: &mut Env, url: &str) -> Result<String> {
                 Ok(article.text_content)
             }
             // TODO: handle other types of content
-            _ => Err(anyhow!("unrecognized content type: {content_type}")),
+            _ => Err(anyhow!("Unrecognized content type: {content_type}")),
         }
     }
 }
