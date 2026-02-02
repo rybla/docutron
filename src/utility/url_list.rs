@@ -20,7 +20,7 @@ pub fn clean_url(url: &str) -> String {
     }
 }
 
-/// Reads the file at `config::BOOKMARKS_URL_LIST_FILEPATH`, which is a newline-separated list of URLs.
+/// Reads the file at [`config::BOOKMARKS_URL_LIST_FILEPATH`], which is a newline-separated list of URLs.
 /// Returns a vector of strings, where each string is a URL.
 pub fn read_bookmarks_url_list() -> Result<Vec<String>> {
     log::trace!("read_bookmarks_url_list");
@@ -37,7 +37,7 @@ pub fn read_bookmarks_url_list() -> Result<Vec<String>> {
         .collect())
 }
 
-/// Reads the file at `config::SAVEDS_URL_LIST_FILEPATH`, which is a newline-separated list of URLs.
+/// Reads the file at [`config::SAVEDS_URL_LIST_FILEPATH`], which is a newline-separated list of URLs.
 /// Returns a vector of strings, where each string is a URL.
 pub fn read_saved_url_list() -> Result<Vec<String>> {
     log::trace!("read_saved_url_list");
