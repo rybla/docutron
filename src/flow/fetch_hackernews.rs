@@ -55,5 +55,25 @@ lazy_static::lazy_static! {
 ///
 /// If an insertion fails, a warning is logged and the process continues.
 pub async fn fetch_hackernews() -> Result<()> {
-    unimplemented!()
+    log::trace!("fetch_hackernews");
+    let content = reqwest::get("https://hnrss.org/best")
+        .await?
+        .bytes()
+        .await?;
+    let channel = rss::Channel::read_from(std::io::Cursor::new(content))?;
+    let mut conn = crate::db::establish_connection();
+
+    for item in channel.items {
+        if let Some(url) = item.link {
+            let new_doc = crate::db::models::NewDocumentBuilder::new(url.clone())
+                .source("hackernews/best")
+                .build();
+
+            if let Err(e) = crate::db::queries::add_document(&mut conn, new_doc) {
+                log::warn!("Failed to insert hackernews story '{url}': {e}");
+            }
+        }
+    }
+
+    Ok(())
 }
