@@ -9,18 +9,18 @@ use diesel::{insert_into, prelude::*};
 pub fn add_document(conn: &mut SqliteConnection, document: NewDocument) -> QueryResult<Document> {
     use crate::db::schema::documents::dsl::*;
 
-    let existing = documents
+    let opt_existing_document = documents
         .filter(url.eq(&document.url))
         .first::<Document>(conn)
         .optional()?;
 
-    if let Some(existing_doc) = existing {
+    if let Some(existing_document) = opt_existing_document {
         if document.bookmark_count > 0 {
-            diesel::update(documents.find(existing_doc.id))
+            diesel::update(documents.find(existing_document.id))
                 .set(bookmark_count.eq(bookmark_count + 1))
                 .get_result(conn)
         } else {
-            Ok(existing_doc)
+            Ok(existing_document)
         }
     } else {
         insert_into(documents).values(&document).get_result(conn)

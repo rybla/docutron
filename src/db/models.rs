@@ -44,12 +44,6 @@ pub struct NewDocumentBuilder {
     added_date: NaiveDate,
     url: String,
     bookmarked: bool,
-    source: Option<String>,
-    title: Option<String>,
-    published_date: Option<String>,
-    summary: Option<String>,
-    fetch_error: Option<String>,
-    summary_error: Option<String>,
 }
 
 impl NewDocumentBuilder {
@@ -58,12 +52,6 @@ impl NewDocumentBuilder {
             added_date: chrono::Local::now().date_naive(),
             url: url.into(),
             bookmarked: false,
-            source: None,
-            title: None,
-            published_date: None,
-            summary: None,
-            fetch_error: None,
-            summary_error: None,
         }
     }
 
@@ -77,47 +65,17 @@ impl NewDocumentBuilder {
         self
     }
 
-    pub fn source(mut self, source: impl Into<String>) -> Self {
-        self.source = Some(source.into());
-        self
-    }
-
-    pub fn title(mut self, title: impl Into<String>) -> Self {
-        self.title = Some(title.into());
-        self
-    }
-
-    pub fn published_date(mut self, published_date: impl Into<String>) -> Self {
-        self.published_date = Some(published_date.into());
-        self
-    }
-
-    pub fn summary(mut self, summary: impl Into<String>) -> Self {
-        self.summary = Some(summary.into());
-        self
-    }
-
-    pub fn fetch_error(mut self, fetch_error: impl Into<String>) -> Self {
-        self.fetch_error = Some(fetch_error.into());
-        self
-    }
-
-    pub fn summary_error(mut self, summary_error: impl Into<String>) -> Self {
-        self.summary_error = Some(summary_error.into());
-        self
-    }
-
     pub fn build(self) -> NewDocument {
         NewDocument {
             added_date: self.added_date,
             url: self.url,
             bookmark_count: if self.bookmarked { 1 } else { 0 },
-            source: self.source,
-            title: self.title,
-            published_date: self.published_date,
-            summary: self.summary,
-            fetch_error: self.fetch_error,
-            summary_error: self.summary_error,
+            source: None,
+            title: None,
+            published_date: None,
+            summary: None,
+            fetch_error: None,
+            summary_error: None,
         }
     }
 }
@@ -151,10 +109,8 @@ pub struct NewAuthor {
 
 pub struct NewAuthorBuilder {
     name: Option<String>,
-    added_date: NaiveDate,
     url: String,
-    github_username: Option<String>,
-    x_username: Option<String>,
+    added_date: NaiveDate,
 }
 
 impl NewAuthorBuilder {
@@ -163,8 +119,6 @@ impl NewAuthorBuilder {
             name: None,
             url: url.into(),
             added_date: chrono::Local::now().date_naive(),
-            github_username: None,
-            x_username: None,
         }
     }
 
@@ -173,23 +127,13 @@ impl NewAuthorBuilder {
         self
     }
 
-    pub fn github_username(mut self, github_username: impl Into<String>) -> Self {
-        self.github_username = Some(github_username.into());
-        self
-    }
-
-    pub fn x_username(mut self, x_username: impl Into<String>) -> Self {
-        self.x_username = Some(x_username.into());
-        self
-    }
-
     pub fn build(self) -> NewAuthor {
         NewAuthor {
             added_date: self.added_date,
             url: self.url,
             name: self.name,
-            github_username: self.github_username,
-            x_username: self.x_username,
+            github_username: None,
+            x_username: None,
         }
     }
 }

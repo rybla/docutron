@@ -39,7 +39,7 @@ pub fn read_bookmarks_url_list() -> Result<Vec<String>> {
 
 /// Reads the file at [`config::SAVEDS_URL_LIST_FILEPATH`], which is a newline-separated list of URLs.
 /// Returns a vector of strings, where each string is a URL.
-pub fn read_saved_url_list() -> Result<Vec<String>> {
+pub fn read_saveds_url_list() -> Result<Vec<String>> {
     log::trace!("read_saved_url_list");
     let content = fs::read_to_string(&*config::SAVEDS_URL_LIST_FILEPATH).with_context(|| {
         format!(
