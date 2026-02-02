@@ -10,13 +10,15 @@ async fn main() -> Result<()> {
     env_logger::init();
     dotenv()?;
 
+    let mut conn = docutron::db::establish_connection();
+
     // fetches
-    fetch_bookmarks().await?;
-    fetch_hackernews().await?;
-    fetch_saveds().await?;
+    fetch_bookmarks(&mut conn).await?;
+    fetch_hackernews(&mut conn).await?;
+    fetch_saveds(&mut conn).await?;
 
     // updates
-    update_all().await?;
+    update_all(&mut conn).await?;
 
     Ok(())
 }
