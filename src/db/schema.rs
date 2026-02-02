@@ -10,6 +10,7 @@ diesel::table! {
 diesel::table! {
     authors (id) {
         id -> Integer,
+        added_date -> Date,
         name -> Nullable<Text>,
         website_url -> Nullable<Text>,
         github_username -> Nullable<Text>,
@@ -56,13 +57,15 @@ diesel::table! {
 diesel::table! {
     tag_groups (id) {
         id -> Integer,
-        name -> Text,
+        added_date -> Date,
+        name -> Nullable<Text>,
     }
 }
 
 diesel::table! {
     tags (id) {
         id -> Integer,
+        added_date -> Date,
         label -> Text,
     }
 }

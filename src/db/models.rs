@@ -132,6 +132,7 @@ impl Default for NewDocumentBuilder {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct Author {
     pub id: i32,
+    pub added_date: NaiveDate,
     pub name: Option<String>,
     pub website_url: Option<String>,
     pub github_username: Option<String>,
@@ -150,6 +151,7 @@ pub struct NewAuthor {
 
 pub struct NewAuthorBuilder {
     name: Option<String>,
+    pub added_date: NaiveDate,
     website_url: Option<String>,
     github_username: Option<String>,
     x_username: Option<String>,
@@ -159,6 +161,7 @@ impl NewAuthorBuilder {
     pub fn new() -> Self {
         Self {
             name: None,
+            added_date: chrono::Local::now().date_naive(),
             website_url: None,
             github_username: None,
             x_username: None,
@@ -225,7 +228,8 @@ pub struct NewTag {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct TagGroup {
     pub id: i32,
-    pub name: String,
+    pub added_date: NaiveDate,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Insertable)]

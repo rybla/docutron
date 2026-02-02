@@ -25,20 +25,14 @@ CREATE TABLE documents (
 -------------------------------------------------------------------------------
 
 CREATE TABLE authors (
+    -- required
     id INTEGER PRIMARY KEY NOT NULL,
+    added_date DATE NOT NULL,
+    -- optional
     name TEXT,
     website_url TEXT,
     github_username TEXT,
     x_username TEXT
-);
-
--- relates many document to many authors
-CREATE TABLE document_authors (
-    document_id INTEGER NOT NULL,
-    author_id INTEGER NOT NULL,
-    PRIMARY KEY (document_id, author_id),
-    FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE CASCADE,
-    FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
 -------------------------------------------------------------------------------
@@ -46,14 +40,32 @@ CREATE TABLE document_authors (
 -------------------------------------------------------------------------------
 
 CREATE TABLE tags (
+    -- required
     id INTEGER PRIMARY KEY NOT NULL,
+    added_date DATE NOT NULL,
     label TEXT NOT NULL
 );
 
 -- tag groups
 CREATE TABLE tag_groups (
+    -- required
     id INTEGER PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL
+    added_date DATE NOT NULL,
+    -- optional
+    name TEXT
+);
+
+-------------------------------------------------------------------------------
+--- relations
+-------------------------------------------------------------------------------
+
+-- relates many documents to many authors
+CREATE TABLE document_authors (
+    document_id INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    PRIMARY KEY (document_id, author_id),
+    FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES authors (id) ON DELETE CASCADE
 );
 
 -- relates one tag group to many tags
@@ -65,7 +77,7 @@ CREATE TABLE tag_group_tags (
     FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
 );
 
--- relates many document to many tags
+-- relates many documents to many tags
 CREATE TABLE document_tags (
     document_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
@@ -74,7 +86,7 @@ CREATE TABLE document_tags (
     FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
 );
 
--- relates many author to many tags
+-- relates many authors to many tags
 CREATE TABLE author_tags (
     author_id INTEGER NOT NULL,
     tag_id INTEGER NOT NULL,
