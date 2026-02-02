@@ -10,9 +10,9 @@ diesel::table! {
 diesel::table! {
     authors (id) {
         id -> Integer,
+        url -> Text,
         added_date -> Date,
         name -> Nullable<Text>,
-        website_url -> Nullable<Text>,
         github_username -> Nullable<Text>,
         x_username -> Nullable<Text>,
     }
@@ -36,8 +36,8 @@ diesel::table! {
     documents (id) {
         id -> Integer,
         added_date -> Date,
+        url -> Text,
         bookmark_count -> Integer,
-        url -> Nullable<Text>,
         source -> Nullable<Text>,
         title -> Nullable<Text>,
         published_date -> Nullable<Text>,

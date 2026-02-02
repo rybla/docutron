@@ -8,10 +8,10 @@ CREATE TABLE documents (
     -- required
     id INTEGER PRIMARY KEY NOT NULL,
     added_date DATE NOT NULL,
+    url TEXT NOT NULL UNIQUE,
     -- default
     bookmark_count INTEGER NOT NULL DEFAULT 0,
     -- optional
-    url TEXT,
     source TEXT,
     title TEXT,
     published_date TEXT,
@@ -27,10 +27,10 @@ CREATE TABLE documents (
 CREATE TABLE authors (
     -- required
     id INTEGER PRIMARY KEY NOT NULL,
+    url TEXT NOT NULL UNIQUE,
     added_date DATE NOT NULL,
     -- optional
     name TEXT,
-    website_url TEXT,
     github_username TEXT,
     x_username TEXT
 );

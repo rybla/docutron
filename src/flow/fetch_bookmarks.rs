@@ -9,8 +9,7 @@ pub async fn fetch_bookmarks() -> Result<()> {
     let mut conn = crate::db::establish_connection();
 
     for url in bookmarks {
-        let new_doc = crate::db::models::NewDocumentBuilder::new()
-            .url(url.clone())
+        let new_doc = crate::db::models::NewDocumentBuilder::new(url.clone())
             .bookmarked(true)
             .build();
 

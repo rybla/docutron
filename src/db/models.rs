@@ -15,8 +15,8 @@ use diesel::{prelude::*, sqlite};
 pub struct Document {
     pub id: i32,
     pub added_date: NaiveDate,
+    pub url: String,
     pub bookmark_count: i32,
-    pub url: Option<String>,
     pub source: Option<String>,
     pub title: Option<String>,
     pub published_date: Option<String>,
@@ -30,8 +30,8 @@ pub struct Document {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewDocument {
     pub added_date: NaiveDate,
+    pub url: String,
     pub bookmark_count: i32,
-    pub url: Option<String>,
     pub source: Option<String>,
     pub title: Option<String>,
     pub published_date: Option<String>,
@@ -42,8 +42,8 @@ pub struct NewDocument {
 
 pub struct NewDocumentBuilder {
     added_date: NaiveDate,
+    url: String,
     bookmarked: bool,
-    url: Option<String>,
     source: Option<String>,
     title: Option<String>,
     published_date: Option<String>,
@@ -53,11 +53,11 @@ pub struct NewDocumentBuilder {
 }
 
 impl NewDocumentBuilder {
-    pub fn new() -> Self {
+    pub fn new(url: impl Into<String>) -> Self {
         Self {
             added_date: chrono::Local::now().date_naive(),
+            url: url.into(),
             bookmarked: false,
-            url: None,
             source: None,
             title: None,
             published_date: None,
@@ -74,11 +74,6 @@ impl NewDocumentBuilder {
 
     pub fn bookmarked(mut self, bookmarked: bool) -> Self {
         self.bookmarked = bookmarked;
-        self
-    }
-
-    pub fn url(mut self, url: impl Into<String>) -> Self {
-        self.url = Some(url.into());
         self
     }
 
@@ -115,8 +110,8 @@ impl NewDocumentBuilder {
     pub fn build(self) -> NewDocument {
         NewDocument {
             added_date: self.added_date,
-            bookmark_count: if self.bookmarked { 1 } else { 0 },
             url: self.url,
+            bookmark_count: if self.bookmarked { 1 } else { 0 },
             source: self.source,
             title: self.title,
             published_date: self.published_date,
@@ -124,12 +119,6 @@ impl NewDocumentBuilder {
             fetch_error: self.fetch_error,
             summary_error: self.summary_error,
         }
-    }
-}
-
-impl Default for NewDocumentBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -143,8 +132,8 @@ impl Default for NewDocumentBuilder {
 pub struct Author {
     pub id: i32,
     pub added_date: NaiveDate,
+    pub url: String,
     pub name: Option<String>,
-    pub website_url: Option<String>,
     pub github_username: Option<String>,
     pub x_username: Option<String>,
 }
@@ -154,26 +143,26 @@ pub struct Author {
 #[diesel(check_for_backend(sqlite::Sqlite))]
 pub struct NewAuthor {
     pub added_date: NaiveDate,
+    pub url: String,
     pub name: Option<String>,
-    pub website_url: Option<String>,
     pub github_username: Option<String>,
     pub x_username: Option<String>,
 }
 
 pub struct NewAuthorBuilder {
     name: Option<String>,
-    pub added_date: NaiveDate,
-    website_url: Option<String>,
+    added_date: NaiveDate,
+    url: String,
     github_username: Option<String>,
     x_username: Option<String>,
 }
 
 impl NewAuthorBuilder {
-    pub fn new() -> Self {
+    pub fn new(url: impl Into<String>) -> Self {
         Self {
             name: None,
+            url: url.into(),
             added_date: chrono::Local::now().date_naive(),
-            website_url: None,
             github_username: None,
             x_username: None,
         }
@@ -181,11 +170,6 @@ impl NewAuthorBuilder {
 
     pub fn name(mut self, name: impl Into<String>) -> Self {
         self.name = Some(name.into());
-        self
-    }
-
-    pub fn website_url(mut self, website_url: impl Into<String>) -> Self {
-        self.website_url = Some(website_url.into());
         self
     }
 
@@ -202,17 +186,11 @@ impl NewAuthorBuilder {
     pub fn build(self) -> NewAuthor {
         NewAuthor {
             added_date: self.added_date,
+            url: self.url,
             name: self.name,
-            website_url: self.website_url,
             github_username: self.github_username,
             x_username: self.x_username,
         }
-    }
-}
-
-impl Default for NewAuthorBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
