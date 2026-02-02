@@ -32,6 +32,17 @@ pub fn get_document(conn: &mut SqliteConnection, document_id: i32) -> QueryResul
     documents::dsl::documents.find(document_id).first(conn)
 }
 
+/// Retrieves a document from the database by its URL.
+pub fn get_document_by_url(
+    conn: &mut SqliteConnection,
+    url: &str,
+) -> QueryResult<Option<Document>> {
+    documents::dsl::documents
+        .filter(documents::dsl::url.eq(url))
+        .first(conn)
+        .optional()
+}
+
 /// Retrieves all documents from the database in order of decreasing `added_date`.
 pub fn get_documents(conn: &mut SqliteConnection) -> QueryResult<Vec<Document>> {
     documents::dsl::documents

@@ -65,6 +65,10 @@ pub async fn fetch_hackernews() -> Result<()> {
 
     for item in channel.items {
         if let Some(url) = item.link {
+            if let Ok(Some(_)) = crate::db::queries::get_document_by_url(&mut conn, &url) {
+                continue;
+            }
+
             let new_doc = crate::db::models::NewDocumentBuilder::new(url.clone())
                 .source("hackernews/best")
                 .build();
